@@ -22,7 +22,7 @@ import java.util.zip.ZipOutputStream;
  * @author 猿小蔡
  * @date 2021/12/26
  */
-public class ZipFilesUtils {
+public class ZipFilesJava {
 
     private static final String TAG = "ZipFilesUtils";
 
@@ -145,8 +145,9 @@ public class ZipFilesUtils {
                 zipOutputSteam.closeEntry();
                 Log.i(TAG, "zipFiles, end zip: " + file.getName());
             } else {
+                Log.e(TAG, "zip, isDirectory: " + file.getName());
                 // 文件夹
-                String fileList[] = file.list();
+                String[] fileList = file.list();
                 // 没有子文件和压缩
                 if (fileList == null || fileList.length <= 0) {
                     ZipEntry zipEntry = new ZipEntry(fileString + File.separator);

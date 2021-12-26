@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             thread {
                 val file = File(zipFilePath, zipName)
                 FileUtils.deleteFile(file)
-                ZipFilesUtils.zipFolder(downPath, zipFilePath, zipName)
+                ZipUtilKT.zipFolder(downPath, zipFilePath, zipName)
             }
         }
 
@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
             thread {
                 val file = File(unZipFilePath)
                 FileUtils.deleteFile(file)
-                ZipFilesUtils.unZip(zipFilePath + File.separator + zipName, unZipFilePath)
+                ZipUtilKT.unZip(zipFilePath + File.separator + zipName, unZipFilePath)
             }
         }
     }

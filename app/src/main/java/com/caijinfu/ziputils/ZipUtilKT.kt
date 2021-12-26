@@ -135,10 +135,11 @@ class ZipUtilKT {
                     // 文件夹
                     val fileList = file.list()
                     // 没有子文件和压缩
-                    if (fileList.isEmpty()) {
+                    if (fileList == null || fileList.isEmpty()) {
                         val zipEntry = ZipEntry(fileString + File.separator)
                         zipOutputSteam.putNextEntry(zipEntry)
                         zipOutputSteam.closeEntry()
+                        return
                     }
                     // 子文件和递归
                     for (i in fileList.indices) {

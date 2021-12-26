@@ -16,7 +16,7 @@ import java.util.zip.GZIPOutputStream;
  * @author 猿小蔡
  * @date 2021/12/26
  */
-public class GzipUtil {
+public class GzipUtilJava {
 
     private static final String TAG = "GzipUtil";
 
