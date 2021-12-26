@@ -88,7 +88,7 @@ public class FileUtils {
             return false;
         }
         try {
-            if (file.getParentFile() != null && file.getParentFile().exists()) {
+            if (isExists(file.getParentFile())) {
                 return file.createNewFile();
             } else {
                 if (createDir(file.getParentFile().getAbsolutePath())) {
@@ -109,7 +109,7 @@ public class FileUtils {
     public static boolean createDir(String dirPath) {
         try {
             File file = new File(dirPath);
-            if (file.getParentFile() != null && file.getParentFile().exists()) {
+            if (isExists(file.getParentFile())) {
                 return file.mkdir();
             } else {
                 createDir(file.getParentFile().getAbsolutePath());
@@ -119,6 +119,16 @@ public class FileUtils {
             Log.e(TAG, "Exception：", e);
         }
         return false;
+    }
+
+    /**
+     * 文件是否存在
+     *
+     * @param file 目标文件
+     * @return true：存在，false：不存在
+     */
+    public static boolean isExists(File file) {
+        return file != null && file.exists();
     }
 
     /**
@@ -138,7 +148,7 @@ public class FileUtils {
     public static boolean deleteFileOrDirectory(File file) {
         try {
             if (file != null && file.isFile()) {
-                return file.exists() && file.delete();
+                return isExists(file) && file.delete();
             }
             if (file != null && file.isDirectory()) {
                 File[] childFiles = file.listFiles();
@@ -163,10 +173,13 @@ public class FileUtils {
      *
      * @param stream Closeable
      */
-    public static void closeQuietly(Closeable stream) {
-        if (stream != null) {
+    public static void closeQuietly(Closeable... stream) {
+        if (stream != null && stream.length > 0) {
             try {
-                stream.close();
+                for (int i = 0; i < stream.length; i++) {
+                    Closeable closeable = stream[i];
+                    closeable.close();
+                }
             } catch (IOException e) {
                 Log.e(TAG, "closeQuietly, IOException：", e);
             }
