@@ -84,6 +84,7 @@ class ZipUtilKT {
                 for (file in files) {
                     // 如果文件不存在或者是目录则不压缩
                     if (!file.exists() || file.isDirectory) {
+                        Log.e(TAG, "zip, ${file.name} is no exists or isDirectory")
                         continue
                     }
                     Log.i(TAG, "zip, ${file.name} start zip")
