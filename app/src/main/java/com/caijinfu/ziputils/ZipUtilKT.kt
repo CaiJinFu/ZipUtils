@@ -1,5 +1,6 @@
 package com.caijinfu.ziputils
 
+import android.util.Log
 import java.io.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
@@ -13,9 +14,9 @@ import java.util.zip.ZipOutputStream
 
 class ZipUtilKT {
 
-    private val TAG = javaClass.simpleName
-
     companion object {
+
+        private val TAG = "ZipUtilKT"
 
         /**
          * 解压缩
@@ -25,6 +26,10 @@ class ZipUtilKT {
          */
         @JvmStatic
         fun unZip(zipFile: String, descDir: String) {
+            if (!File(zipFile).exists()) {
+                Log.i(TAG, "zip, zipFile is no exists")
+                return
+            }
             val buffer = ByteArray(1024)
             var outputStream: OutputStream? = null
             var inputStream: InputStream? = null
@@ -40,52 +45,48 @@ class ZipUtilKT {
                     if (!FileUtils.createFile(newFile)) {
                         continue
                     }
+                    Log.i(TAG, "zip, $zipEntryName start unzip")
                     val descFile: File = newFile
                     outputStream = FileOutputStream(descFile)
                     var len: Int
                     while (inputStream.read(buffer).also { len = it } > 0) {
                         outputStream.write(buffer, 0, len)
                     }
+                    Log.i(TAG, "zip, $zipEntryName end unzip")
                     FileUtils.closeQuietly(inputStream)
                     FileUtils.closeQuietly(outputStream)
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "unZip, Exception：", e)
             } finally {
                 FileUtils.closeQuietly(inputStream)
                 FileUtils.closeQuietly(outputStream)
             }
-        }
-
-        private fun createFile(filePath: String): File {
-            val file = File(filePath)
-            val parentFile = file.parentFile!!
-            if (!parentFile.exists()) {
-                parentFile.mkdirs()
-            }
-            if (!file.exists()) {
-                file.createNewFile()
-            }
-            return file
+            Log.i(TAG, "zip, all unzip finish")
         }
 
         @JvmStatic
         fun zip(files: List<File>, zipFilePath: String) {
             if (files.isEmpty()) {
+                Log.e(TAG, "zip, files isEmpty")
                 return
             }
-            val newZipFile = File(zipFilePath)
-            if (!FileUtils.createFile(newZipFile)) {
+            val zipFile = File(zipFilePath)
+            if (!FileUtils.createFile(zipFile)) {
+                Log.e(TAG, "zip, createFile is fail")
                 return
             }
-            val zipFile = newZipFile
             val buffer = ByteArray(1024)
             var zipOutputStream: ZipOutputStream? = null
             var inputStream: FileInputStream? = null
             try {
                 zipOutputStream = ZipOutputStream(FileOutputStream(zipFile))
                 for (file in files) {
-                    if (!file.exists()) {
+                    // 如果文件不存在或者是目录则不压缩
+                    if (!file.exists() || file.isDirectory) {
                         continue
                     }
+                    Log.i(TAG, "zip, ${file.name} start zip")
                     zipOutputStream.putNextEntry(ZipEntry(file.name))
                     inputStream = FileInputStream(file)
                     var len: Int
@@ -93,7 +94,10 @@ class ZipUtilKT {
                         zipOutputStream.write(buffer, 0, len)
                     }
                     zipOutputStream.closeEntry()
+                    Log.i(TAG, "zip, ${file.name} end zip")
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "zip, Exception：", e)
             } finally {
                 FileUtils.closeQuietly(inputStream)
                 FileUtils.closeQuietly(zipOutputStream)
@@ -113,6 +117,7 @@ class ZipUtilKT {
                 val files = folder.listFiles()
                 val filesList: List<File> = files.toList()
                 zip(filesList, zipFilePath)
+                Log.i(TAG, "zipByFolder, all zip finish")
             }
         }
     }

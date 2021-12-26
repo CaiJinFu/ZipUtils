@@ -122,6 +122,43 @@ public class FileUtils {
     }
 
     /**
+     * 删除指定文件
+     *
+     * @throws IOException
+     */
+    public static boolean deleteFile(File file) {
+        return deleteFileOrDirectory(file);
+    }
+
+    /**
+     * 删除指定文件，如果是文件夹，则递归删除
+     *
+     * @throws IOException
+     */
+    public static boolean deleteFileOrDirectory(File file) {
+        try {
+            if (file != null && file.isFile()) {
+                return file.exists() && file.delete();
+            }
+            if (file != null && file.isDirectory()) {
+                File[] childFiles = file.listFiles();
+                // 删除空文件夹
+                if (childFiles == null || childFiles.length == 0) {
+                    return file.delete();
+                }
+                // 递归删除文件夹下的子文件
+                for (int i = 0; i < childFiles.length; i++) {
+                    deleteFileOrDirectory(childFiles[i]);
+                }
+                return file.delete();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "deleteFileOrDirectory, Exception：", e);
+        }
+        return false;
+    }
+
+    /**
      * 关闭流
      *
      * @param stream Closeable
